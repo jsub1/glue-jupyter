@@ -72,6 +72,10 @@ class IpyvolumeScatterLayerArtist(LayerArtist):
 
         link((self.state, 'geo'), (self.scatter, 'geo'))
 
+    def __del__(self):
+        self.remove()
+        super(IpyvolumeScatterLayerArtist, self).__del__()
+
     def _update_color(self, ignore=None):
         cmap = self.state.cmap
         if self.state.cmap_mode == 'Linear':
@@ -117,6 +121,10 @@ class IpyvolumeScatterLayerArtist(LayerArtist):
 
         self._update_size()
 
+    def remove(self):
+        fig = self.view.figure
+        fig.scatters = [s for s in fig.scatters if s is not self.scatter and s is not self.quiver]
+
     def _clear_selection(self):
         self.scatter.selected = np.array([])
         self.quiver.selected = np.array([])
@@ -149,3 +157,4 @@ class IpyvolumeScatterLayerArtist(LayerArtist):
         else:
             self.quiver.size = value
             self.quiver.size_selected = value
+
