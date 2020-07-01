@@ -86,11 +86,25 @@ class IpyvolumeVolumeLayerArtist(VispyLayerArtist):
 
         on_change([(self.state, 'color', 'alpha')])(self._update_transfer_function)
 
+    def __del__(self):
+        self.remove()
+        super(IpyvolumeVolumeLayerArtist, self).__del__()
+
     def clear(self):
         pass
 
     def redraw(self):
         pass
+
+    def remove(self):
+        fig = self.figure
+        fig.volumes = [v for v in fig.volumes if v is not self.volume]
+
+        # Have to force some update in case of overlapping volumes (has to be a better way)
+        if self.ipyvolume_viewer.layers:
+            state = self.ipyvolume_viewer.layers[0].state
+            state.clamp_min = not state.clamp_min
+            state.clamp_min = not state.clamp_min
 
     def update(self):
         if isinstance(self.layer, Subset):
